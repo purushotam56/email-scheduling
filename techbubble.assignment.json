@@ -1,0 +1,85 @@
+{
+	"info": {
+		"_postman_id": "6cffb5a1-a322-48fa-b795-2c0139e2d234",
+		"name": "techbubble",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "8638846"
+	},
+	"item": [
+		{
+			"name": "update email schedule",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"recipients\": [\"chhuchhiyapurushotam@gmail.com\"],\n  \"subject\": \"Test Email\",\n  \"email_text\": \"This is a test email sent with current time.\",\n  \"scheduledTime\": \"2024-08-07T08:28:33.441Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/emails/66b32fa32e1acf847e18b3ed"
+			},
+			"response": []
+		},
+		{
+			"name": "delete email schedule",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"recipients\": [\"chhuchhiyapurushotam@gmail.com\"],\n  \"subject\": \"Test Email\",\n  \"email_text\": \"This is a test email sent with current time.\",\n  \"scheduledTime\": \"2024-08-07T08:28:33.441Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/emails/66b32fa32e1acf847e18b3ed"
+			},
+			"response": []
+		},
+		{
+			"name": "create email schedule",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"recipients\": [\"chhuchhiyapurushotam@gmail.com\",\"test@test.com\"],\n  \"subject\": \"Test Email\",\n  \"email_text\": \"This is a test email sent with current time.\",\n  \"scheduledTime\": \"2024-08-07T08:31:33.441Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/emails"
+			},
+			"response": []
+		},
+		{
+			"name": "get all email schedules",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"recipients\": [\"chhuchhiyapurushotam@gmail.com\"],\n  \"subject\": \"Test Email\",\n  \"email_text\": \"This is a test email sent with current time.\",\n  \"scheduledTime\": \"2024-08-07T08:26:33.441Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:3000/emails"
+			},
+			"response": []
+		}
+	]
+}
