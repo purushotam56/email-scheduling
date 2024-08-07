@@ -3,6 +3,7 @@
 - install node modules using `npm i`
 - to run project `npm start`
 - import "techbubble.assignment.json" to the postman. CRUD apis are already in it.
+- to run lint use `npm run lint`
 
 
 NOTE:
