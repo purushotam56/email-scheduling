@@ -5,6 +5,7 @@ const { body, param, validationResult } = require('express-validator');
 const { isValidObjectId } = require('mongoose');
 const sgMail = require('@sendgrid/mail');
 const moment = require('moment');
+const cron = require('node-cron');
 
 const validateRequest = (req, res, next) => {
     const errors = validationResult(req);
@@ -22,13 +23,13 @@ router.post('/',
         body('subject').isString().escape().withMessage('Email subject is required'),
         body('email_text').isString().escape().withMessage('Email text is required'),
         body('scheduledTime').isISO8601().toDate().withMessage('Scheduled time must be a valid date').custom((value) => {
-            const nowUtc = moment.utc();
-            const scheduledTimeUtc = moment.utc(value);
-            if (scheduledTimeUtc.isBefore(nowUtc)) {
+                const nowUtc = moment.utc();
+                const scheduledTimeUtc = moment.utc(value);
+                if (scheduledTimeUtc.isBefore(nowUtc)) {
                 throw new Error('Scheduled time must be a future date or the current date and time');
-            }
-            return true;
-        }),
+                }
+                return true;
+            }),
     ],
     validateRequest, async (req, res) => {
         try {
@@ -61,13 +62,13 @@ router.put('/:id',
         body('subject').optional().isString().escape().withMessage('Subject is required'),
         body('email_text').optional().isString().escape().withMessage('Email text is required'),
         body('scheduledTime').optional().isISO8601().toDate().withMessage('Scheduled time must be a valid date').custom((value) => {
-            const nowUtc = moment.utc();
-            const scheduledTimeUtc = moment.utc(value);
-            if (scheduledTimeUtc.isBefore(nowUtc)) {
+                const nowUtc = moment.utc();
+                const scheduledTimeUtc = moment.utc(value);
+                if (scheduledTimeUtc.isBefore(nowUtc)) {
                 throw new Error('Scheduled time must be a future date or the current date and time');
-            }
-            return true;
-        }),
+                }
+                return true;
+            }),
     ],
     validateRequest, async (req, res) => {
         try {
@@ -93,8 +94,8 @@ router.put('/:id',
 
             // Update the email if it has not been sent
             const updatedEmail = await Email.findByIdAndUpdate(req.params.id, updateFields, {
-                new: true,
-                runValidators: true,
+                    new: true,
+                    runValidators: true,
             });
 
             res.status(200).send(updatedEmail);
@@ -117,13 +118,14 @@ router.get('/', async (req, res) => {
 // Delete a scheduled email
 router.delete('/:id', async (req, res) => {
     try {
-        const email = await Email.findByIdAndDelete(req.params.id);
+        const email = await Email.findById(req.params.id);
         if (!email) {
-            return res.status(404).send();
+            return res.status(404).send({ message: 'Email not found' });
         }
         if(email.status !== 'scheduled'){
             return res.status(400).send({ message: 'Cannot delete an email that has already been sent or failed' });
         }
+        await email.remove();
         res.status(200).send(email);
     } catch (error) {
         res.status(500).send(error);
@@ -133,7 +135,7 @@ router.delete('/:id', async (req, res) => {
 // Send scheduled emails
 const sendScheduledEmails = async () => {
     const nowUtc = moment.utc().toDate();
-    const emailsToSend = await Email.find({ 
+    const emailsToSend = await Email.find({
         scheduledTime: { $lte: nowUtc },
         status: 'scheduled' 
     });
@@ -159,12 +161,14 @@ const sendScheduledEmails = async () => {
     }
 };
 
-setInterval(() => {
+// Schedule the job to run every minute
+cron.schedule('* * * * *', () => {
     try {
+        console.log('job started at ', new Date())
         sendScheduledEmails();
     } catch (error) {
         console.error('Error in scheduled email sending process:', error);
     }
-}, 60000); // Check every miniute
+});
 
 module.exports = router;
